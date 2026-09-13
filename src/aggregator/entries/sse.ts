@@ -135,7 +135,12 @@ const create = (config: McpAggregatorSseConfig, options?: ExpressOptions) => {
         })
       })
 
-      app.listen(port)
+      // Bind to the configured interface when connection.host is set
+      // (e.g. '127.0.0.1' for loopback-only); Node's default (all
+      // interfaces) applies when omitted. Returns the underlying server
+      // so callers/tests can inspect the actual bind via server.address().
+      const httpServer = app.listen(port, config.server.connection.host)
+      return httpServer
     },
     stop: async () => {
       await Promise.all(
