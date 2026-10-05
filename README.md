@@ -800,7 +800,7 @@ GPL-3.0-or-later
 Original library by [Mike Cornwell](https://github.com/Leadership-4-Tech/mcp-ai)<br/>
 — published as `@l4t/mcp-ai`.
 
-This fork maintained by [Guan](https://github.com/guan-tends)<br/>
+This fork maintained by [Guan](https://github.com/sagelabs-dev)<br/>
 — published as [`@guan-tends/mcp-ai`](https://www.npmjs.com/package/@guan-tends/mcp-ai).
 
 Bug fixes and the `autoPrefix` feature are contributed back upstream via<br/>
