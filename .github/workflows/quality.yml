@@ -32,4 +32,3 @@ jobs:
 
       - name: Prettier Check
         run: npm run prettier:check
-
