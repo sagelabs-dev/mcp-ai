@@ -1,4 +1,8 @@
-import { isZodSchema, isZodRawShape, wrapRawShape, openApiToZodSchema } from '../common/libs.js'
+import {
+  isZodSchema,
+  isZodRawShape,
+  openApiToZodSchema,
+} from '../common/libs.js'
 import { SimpleServerConfig } from './types.js'
 
 interface Features {
@@ -17,7 +21,7 @@ export const create = (config: SimpleServerConfig): Features => {
         return [
           tool.name,
           tool.description || '',
-          tool.inputSchema,  // Pass raw shape directly
+          tool.inputSchema, // Pass raw shape directly
           async (input: any) => {
             const result = await tool.execute(input)
             if (result === undefined) {

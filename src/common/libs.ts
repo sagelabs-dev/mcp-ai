@@ -62,20 +62,18 @@ export const createTransport = (connection: Connection) => {
  * This creates a pre-processor that attempts to parse stringified JSON before validation.
  */
 const createStringifiedPreprocessor = (innerType: ZodType): ZodType => {
-  return z.preprocess(
-    (val) => {
-      // If it's a string, try to parse it as JSON
-      if (typeof val === 'string') {
-        try {
-          return JSON.parse(val)
-        } catch {
-          return val // Return as-is if not valid JSON
-        }
+  return z.preprocess(val => {
+    // If it's a string, try to parse it as JSON
+    if (typeof val === 'string') {
+      // eslint-disable-next-line functional/no-try-statements
+      try {
+        return JSON.parse(val)
+      } catch {
+        return val // Return as-is if not valid JSON
       }
-      return val // Return as-is if not a string
-    },
-    innerType
-  ) as unknown as ZodType
+    }
+    return val // Return as-is if not a string
+  }, innerType) as unknown as ZodType
 }
 
 export const openApiToZodSchema = (
@@ -194,7 +192,9 @@ const createZodTypeFromDefinition = (def: any): ZodType => {
       }
       case 'array': {
         // Wrap arrays with stringified JSON preprocessor to handle Kai's serialization
-        const innerArray = z.array(items ? createZodTypeFromDefinition(items) : z.any())
+        const innerArray = z.array(
+          items ? createZodTypeFromDefinition(items) : z.any()
+        )
         return createStringifiedPreprocessor(innerArray)
       }
       case 'object': {
@@ -227,15 +227,21 @@ export const isZodSchema = (schema: any): schema is ZodSchema => {
  * Raw shapes don't have _def/_zod but their values do.
  */
 const isZodTypeLike = (value: any): boolean => {
-  return value && 
-    typeof value === 'object' && 
+  return (
+    value &&
+    typeof value === 'object' &&
     typeof value.parse === 'function' &&
     typeof value.safeParse === 'function'
+  )
 }
 
 export const isZodRawShape = (schema: any): boolean => {
-  if (!schema || typeof schema !== 'object') return false
-  if (schema instanceof ZodSchema) return false  // Already a schema
+  if (!schema || typeof schema !== 'object') {
+    return false
+  }
+  if (schema instanceof ZodSchema) {
+    return false // Already a schema
+  }
   const values = Object.values(schema)
   return values.length > 0 && values.every(isZodTypeLike)
 }

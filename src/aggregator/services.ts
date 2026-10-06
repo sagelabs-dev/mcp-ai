@@ -18,6 +18,7 @@ const DEFAULT_TOOL_TIMEOUT_MS = 180_000 // 3 minutes, configurable via aggregato
 const parseStringifiedParams = (value: unknown): unknown => {
   // If it's a string, try to parse it as JSON
   if (typeof value === 'string') {
+    // eslint-disable-next-line functional/no-try-statements
     try {
       const parsed = JSON.parse(value)
       // Recursively parse the result (in case of nested stringification)
@@ -87,6 +88,7 @@ const resolveCollision = (
   if (!existingNames.has(desiredName)) {
     return desiredName
   }
+  // eslint-disable-next-line functional/no-let
   let suffix = 2
   // eslint-disable-next-line functional/no-loop-statements
   while (existingNames.has(`${desiredName}_${suffix}`)) {
