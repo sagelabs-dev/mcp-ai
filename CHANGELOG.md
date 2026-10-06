@@ -19,8 +19,7 @@ exist on the connection types, so TypeScript silently dropped it.
 
 ### Fixed: aggregator SSE entry honors `connection.port`
 
-The aggregator SSE entry took port as a `start()` argument (defaulting to
-3000) and ignored `config.server.connection.port`, violating the declared
+The aggregator SSE entry took port as a `start()` argument (defaulting to 3000) and ignored `config.server.connection.port`, violating the declared
 type contract and diverging from the aggregator http sibling. Port now
 resolves config-first with `DEFAULT_PORT` fallback, matching the family
 idiom (a configured `0` is treated as absent — documented in tests).

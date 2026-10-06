@@ -15,7 +15,10 @@ import * as net from 'net'
 import * as os from 'os'
 import { AddressInfo } from 'net'
 import { create as createSimpleServer } from '../../../src/simple-server/entries'
-import { SimpleServerHttpConfig, ServerTool } from '../../../src/simple-server/types'
+import {
+  SimpleServerHttpConfig,
+  ServerTool,
+} from '../../../src/simple-server/types'
 
 const noopTool: ServerTool = {
   name: 'noop',
@@ -32,7 +35,7 @@ const httpConfig = (extra: Record<string, unknown>): SimpleServerHttpConfig =>
     server: {
       connection: { type: 'http', url: 'http://127.0.0.1:0', ...extra },
     },
-  } as unknown as SimpleServerHttpConfig)
+  }) as unknown as SimpleServerHttpConfig
 
 /** Wait until the server is accepting connections on its bound address. */
 const waitListening = (server: net.Server): Promise<void> =>
@@ -46,8 +49,8 @@ const servers: net.Server[] = []
 afterEach(async () => {
   await Promise.all(
     servers.splice(0).map(
-      (s) =>
-        new Promise<void>((resolve) => {
+      s =>
+        new Promise<void>(resolve => {
           if (s.listening) s.close(() => resolve())
           else resolve()
         })
@@ -59,9 +62,12 @@ describe('SimpleServer connection.host binding (v1.6.7)', () => {
   it('binds to the configured host when connection.host is set', async () => {
     // THE regression test: before 1.6.7 this config field was silently
     // dropped and the socket bound all interfaces.
-    const server = createSimpleServer(httpConfig({ host: '127.0.0.1', port: 0 }))
+    const server = createSimpleServer(
+      httpConfig({ host: '127.0.0.1', port: 0 })
+    )
     const handle = (await server.start()) as net.Server
-    expect(handle, 'start() must return the underlying http.Server').to.not.be.undefined
+    expect(handle, 'start() must return the underlying http.Server').to.not.be
+      .undefined
     servers.push(handle)
     await waitListening(handle)
     const addr = handle.address() as AddressInfo
@@ -85,7 +91,7 @@ describe('SimpleServer connection.host binding (v1.6.7)', () => {
     const ifaces = os.networkInterfaces()
     const external = Object.values(ifaces)
       .flat()
-      .find((i) => i && !i.internal && i.family === 'IPv4')
+      .find(i => i && !i.internal && i.family === 'IPv4')
     if (!external) return this.skip()
 
     const server = createSimpleServer(
@@ -97,7 +103,7 @@ describe('SimpleServer connection.host binding (v1.6.7)', () => {
     const port = (handle.address() as AddressInfo).port
 
     // Connecting to the LAN IP must ECONNREFUSED (bound interface mismatch)
-    const refused = await new Promise<boolean>((resolve) => {
+    const refused = await new Promise<boolean>(resolve => {
       const sock = net.connect({ host: external.address, port })
       sock.once('connect', () => {
         sock.destroy()
@@ -107,10 +113,13 @@ describe('SimpleServer connection.host binding (v1.6.7)', () => {
         resolve(err.code === 'ECONNREFUSED' || err.code === 'EHOSTUNREACH')
       })
     })
-    expect(refused, 'server bound to 127.0.0.1 must refuse LAN-addressed connections').to.be.true
+    expect(
+      refused,
+      'server bound to 127.0.0.1 must refuse LAN-addressed connections'
+    ).to.be.true
 
     // Control: loopback connect succeeds (the server IS reachable)
-    const reachable = await new Promise<boolean>((resolve) => {
+    const reachable = await new Promise<boolean>(resolve => {
       const sock = net.connect({ host: '127.0.0.1', port })
       sock.once('connect', () => {
         sock.destroy()

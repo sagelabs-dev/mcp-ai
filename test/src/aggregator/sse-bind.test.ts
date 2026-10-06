@@ -29,7 +29,7 @@ const sseConfig = (extra: Record<string, unknown>): McpAggregatorSseConfig =>
       messagesPath: '/messages',
       connection: { type: 'sse', url: 'http://127.0.0.1:0', ...extra },
     },
-  } as unknown as McpAggregatorSseConfig)
+  }) as unknown as McpAggregatorSseConfig
 
 const waitListening = (server: net.Server): Promise<void> =>
   new Promise((resolve, reject) => {
@@ -42,8 +42,8 @@ const servers: net.Server[] = []
 afterEach(async () => {
   await Promise.all(
     servers.splice(0).map(
-      (s) =>
-        new Promise<void>((resolve) => {
+      s =>
+        new Promise<void>(resolve => {
           if (s.listening) s.close(() => resolve())
           else resolve()
         })
@@ -62,7 +62,8 @@ describe('Aggregator SSE entry — connection.port + connection.host (v1.6.7)', 
     const configuredPort = 39871
     const server = createAggregator(sseConfig({ port: configuredPort }))
     const handle = (await server.start()) as net.Server
-    expect(handle, 'start() must return the underlying http.Server').to.not.be.undefined
+    expect(handle, 'start() must return the underlying http.Server').to.not.be
+      .undefined
     servers.push(handle)
     await waitListening(handle)
     const addr = handle.address() as AddressInfo
@@ -70,9 +71,7 @@ describe('Aggregator SSE entry — connection.port + connection.host (v1.6.7)', 
   })
 
   it('binds to the configured host when connection.host is set', async () => {
-    const server = createAggregator(
-      sseConfig({ host: '127.0.0.1', port: 0 })
-    )
+    const server = createAggregator(sseConfig({ host: '127.0.0.1', port: 0 }))
     const handle = (await server.start()) as net.Server
     servers.push(handle)
     await waitListening(handle)
