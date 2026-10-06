@@ -104,7 +104,12 @@ const create = (config: McpAggregatorSseConfig, options?: ExpressOptions) => {
   }
 
   return {
-    start: async (port: number = DEFAULT_PORT) => {
+    // Port resolution matches the aggregator http entry (config-first with
+    // DEFAULT_PORT fallback): connection.port is the declared contract on
+    // SseServerConfig.connection — previously this entry ignored it and
+    // always listened on DEFAULT_PORT unless a caller passed an argument
+    // (the sole caller, bin/mcp-aggregator.mts, never did).
+    start: async () => {
       const features = await createFeatures(config)
       await features.connect()
       await setupServer(features)
@@ -135,7 +140,13 @@ const create = (config: McpAggregatorSseConfig, options?: ExpressOptions) => {
         })
       })
 
-      app.listen(port)
+      // Bind to the configured interface when connection.host is set
+      // (e.g. '127.0.0.1' for loopback-only); Node's default (all
+      // interfaces) applies when omitted. Returns the underlying server
+      // so callers/tests can inspect the actual bind via server.address().
+      const listenPort = config.server.connection.port || DEFAULT_PORT
+      const httpServer = app.listen(listenPort, config.server.connection.host)
+      return httpServer
     },
     stop: async () => {
       await Promise.all(

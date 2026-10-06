@@ -118,7 +118,15 @@ const create = (config: SimpleServerHttpConfig, options?: ExpressOptions) => {
     },
     start: async () => {
       const app = await getApp()
-      app.listen(config.server.connection.port || DEFAULT_PORT)
+      // Bind to the configured interface when connection.host is set
+      // (e.g. '127.0.0.1' for loopback-only); Node's default (all
+      // interfaces) applies when omitted. Returns the underlying server
+      // so callers/tests can inspect the actual bind via server.address().
+      const server = app.listen(
+        config.server.connection.port || DEFAULT_PORT,
+        config.server.connection.host
+      )
+      return server
     },
     stop: async () => {
       Object.values(transports).forEach(transport => transport.close())

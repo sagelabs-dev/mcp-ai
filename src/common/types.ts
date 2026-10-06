@@ -122,6 +122,13 @@ export type HttpServerConfig = Readonly<{
     type: 'http'
     url: string
     port?: number
+    /**
+     * Interface address for the server to listen on (e.g. '127.0.0.1' for
+     * loopback-only). Passed as the second argument to express's
+     * `app.listen(port, host)`. When omitted, Node binds all interfaces
+     * (default `::`), preserving pre-1.6.7 behavior.
+     */
+    host?: string
     headers?: Readonly<Record<string, string>>
     timeout?: number
     retry?: Readonly<{
@@ -157,6 +164,13 @@ export type SseServerConfig = Readonly<{
     type: 'sse'
     url: string
     port?: number
+    /**
+     * Interface address for the server to listen on (e.g. '127.0.0.1' for
+     * loopback-only). Passed as the second argument to express's
+     * `app.listen(port, host)`. When omitted, Node binds all interfaces
+     * (default `::`), preserving pre-1.6.7 behavior.
+     */
+    host?: string
   }>
   /** Path to establish SSE connection. Defaults to '/' */
   path?: string
